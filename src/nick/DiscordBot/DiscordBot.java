@@ -6,9 +6,8 @@ import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
 import nick.DiscordBot.Commands.Clear;
 import nick.DiscordBot.Commands.Help;
-import nick.DiscordBot.Events.MediaVoteReaction;
-import nick.DiscordBot.Events.MemberJoin;
-import nick.DiscordBot.Events.MemberLeave;
+import nick.DiscordBot.Events.*;
+import nick.DiscordBot.Games.ConnectFour;
 
 import javax.security.auth.login.LoginException;
 
@@ -33,6 +32,9 @@ public class DiscordBot {
         jda.addEventListener(new MemberJoin());
         jda.addEventListener(new MemberLeave());
         jda.addEventListener(new MediaVoteReaction());
+        jda.addEventListener(new MessageResponse());
+        jda.addEventListener(new ConnectFour());
+        jda.addEventListener(new MessageReactionAdd());
 
     }
 }
