@@ -9,10 +9,13 @@ public class MediaVoteReaction extends ListenerAdapter {
         String[] keywords = {".mp4",".tv",".webm","https","youtu"};
         String message = event.getMessage().toString().toLowerCase();
 
-        for (String keyword : keywords) {
-            if (message.contains(keyword)) {
-                event.getMessage().addReaction("⭐").queue();
-                event.getMessage().addReaction("❌").queue();
+        // Checks if author is not a bot. If it is not, adds the reactions
+        if(!event.getAuthor().isBot()){
+            for (String keyword : keywords) {
+                if (message.contains(keyword)) {
+                    event.getMessage().addReaction("⭐").queue();
+                    event.getMessage().addReaction("❌").queue();
+                }
             }
         }
     }
