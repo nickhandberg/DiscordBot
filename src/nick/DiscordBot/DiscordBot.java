@@ -8,6 +8,7 @@ import nick.DiscordBot.Commands.Clear;
 import nick.DiscordBot.Commands.Help;
 import nick.DiscordBot.Events.*;
 import nick.DiscordBot.Games.ConnectFour;
+import nick.DiscordBot.Games.TicTacToe;
 
 import javax.security.auth.login.LoginException;
 
@@ -35,6 +36,7 @@ public class DiscordBot {
         jda.addEventListener(new MessageResponse());
         jda.addEventListener(new ConnectFour());
         jda.addEventListener(new MessageReactionAdd());
+        jda.addEventListener(new TicTacToe());
 
     }
 }

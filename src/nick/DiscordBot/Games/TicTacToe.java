@@ -1,7 +1,6 @@
 package nick.DiscordBot.Games;
 
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -10,7 +9,7 @@ import nick.DiscordBot.DiscordBot;
 import java.util.Arrays;
 import java.util.Objects;
 
-public class ConnectFour extends ListenerAdapter {
+public class TicTacToe extends ListenerAdapter {
     private int[][] board;
     private int turn;
     private MessageReceivedEvent event;
@@ -26,9 +25,9 @@ public class ConnectFour extends ListenerAdapter {
         }
 
         // Checks for clear command
-        if (args[0].equalsIgnoreCase(DiscordBot.prefix + "connect4")) {
+        if (args[0].equalsIgnoreCase(DiscordBot.prefix + "tictactoe")) {
             turn = 1;
-            board = new int[6][7];
+            board = new int[3][3];
             for (int[] ints : board) {
                 Arrays.fill(ints, 0);
             }
@@ -37,28 +36,27 @@ public class ConnectFour extends ListenerAdapter {
     }
 
     public void onMessageReactionAdd(MessageReactionAddEvent event){
-        String[] reactionArray = {"1️⃣","2️⃣","3️⃣","4️⃣","5️⃣","6️⃣","7️⃣"};
+        String[] reactionArray = {"↖","⬆","↗","⬅","⏹","➡","↙","⬇","↘"};
+        int[][] choice = {  {0,0},{0,1},{0,2},
+                            {1,0},{1,1},{1,2},
+                            {2,0},{2,1},{2,2}   };
         for(int i=0; i<reactionArray.length; i++){
             if(event.getReactionEmote().getName().equals(reactionArray[i]) && !Objects.requireNonNull(event.getMember()).getUser().isBot()){
-                placePiece(i);
+                placePiece(choice[i]);
                 event.getReaction().removeReaction(event.getUser()).queue();
             }
         }
     }
 
-
-    public void placePiece(int choice){
-        for(int i=board.length-1; i>=0; i--){
-            if(board[i][choice] == 0){
-                board[i][choice] = turn;
-                break;
-            }
+    public void placePiece(int[] choice){
+        if(board[choice[0]][choice[1]] == 0){
+            board[choice[0]][choice[1]] = turn;
+            updateBoard(checkWin());
         }
-        updateBoard(checkWin());
     }
 
     public String getBoardString(){
-        String[] icons = {"⚫","🔴","🟡"};
+        String[] icons = {"⚫","❌","🟡"};
         StringBuilder boardString = new StringBuilder();
         for (int[] ints : board) {
             for (int anInt : ints) {
@@ -71,7 +69,8 @@ public class ConnectFour extends ListenerAdapter {
 
     public void updateBoard(boolean win){
         String boardString = getBoardString();
-        embed.setTitle("Connect4");
+        embed.setTitle("TicTacToe");
+        System.out.println("hit");
         if(win){
             embed.addField("PLAYER "+ turn +" WINS", String.valueOf(boardString),true);
             event.getMessage().clearReactions().queue();
@@ -89,50 +88,49 @@ public class ConnectFour extends ListenerAdapter {
 
     public void displayBoard(MessageReceivedEvent event){
         String boardString = getBoardString();
-        embed.setTitle("Connect4");
+        embed.setTitle("TicTacToe");
         embed.setColor(0xc72a2a);
         embed.addField("Player "+ turn +"'s turn", String.valueOf(boardString),true);
         event.getChannel().sendMessageEmbeds(embed.build()).queue(message -> {
-            message.addReaction("1️⃣").queue();
-            message.addReaction("2️⃣").queue();
-            message.addReaction("3️⃣").queue();
-            message.addReaction("4️⃣").queue();
-            message.addReaction("5️⃣").queue();
-            message.addReaction("6️⃣").queue();
-            message.addReaction("7️⃣").queue();
+            message.addReaction("↖").queue();
+            message.addReaction("⬆").queue();
+            message.addReaction("↗").queue();
+            message.addReaction("⬅").queue();
+            message.addReaction("⏹").queue();
+            message.addReaction("➡").queue();
+            message.addReaction("↙").queue();
+            message.addReaction("⬇").queue();
+            message.addReaction("↘").queue();
         });
         embed.clear();
     }
 
     public boolean checkWin(){
-        // Iterates through rows then columns
-        for (int row = 0; row < board.length; row++) {
-            for (int col = 0; col < board[0].length; col++) {
-                //Stores the current location
-                int location = board[row][col];
-                // Skips empty locations
-                if (location == 0){ continue;}
-
-                //Horizontal
-                if (col + 3 < board[0].length && location == board[row][col+1] && location == board[row][col+2] && location == board[row][col+3]){
-                    return true;
-                }
-                if (row + 3 < board.length) {
-                    // Vertical
-                    if (location == board[row+1][col] && location == board[row+2][col] && location == board[row+3][col]){
-                        return true;
-                    }
-                    // Diagonal leaning right
-                    if (col + 3 < board[0].length && location == board[row+1][col+1] && location == board[row+2][col+2] && location == board[row+3][col+3]){
-                        return true;
-                    }
-                    // Diagonal leaning left
-                    if (col - 3 >= 0 && location == board[row+1][col-1] && location == board[row+2][col-2] && location == board[row+3][col-3]){
-                        return true;
-                    }
-                }
+        //Horizontal
+        for(int i =0; i<board.length; i++){
+            if(board[i][0] == turn && board[i][1] == turn && board[i][2] == turn){
+                return true;
             }
         }
+
+        //Vertical
+        for(int i =0; i<board[0].length; i++){
+            if(board[0][i] == turn && board[1][i] == turn && board[2][i] == turn){
+                return true;
+            }
+        }
+
+        //Diagonals
+        if(board[1][1] == turn){
+            if(board[0][0] == turn && board[2][2] == turn){
+                return true;
+            }
+            if(board[2][0] == turn && board[0][2] == turn){
+                return true;
+            }
+        }
+
+
 
         if(turn == 1){turn++;}
         else{turn--;}

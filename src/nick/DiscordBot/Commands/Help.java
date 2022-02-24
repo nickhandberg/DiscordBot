@@ -14,7 +14,8 @@ public class Help extends ListenerAdapter {
         if(args[0].equalsIgnoreCase(DiscordBot.prefix+"h")){
             EmbedBuilder embed = new EmbedBuilder();
             embed.setTitle("COMMAND LIST");
-            embed.addField("Chat commands",".clear",false);
+            embed.addField("Chat commands","~clear",false);
+            embed.addField("Games","~connect4\n~tictactoe",false);
             embed.setColor(0x0dba3b);
             event.getChannel().sendMessageEmbeds(embed.build()).queue();
             embed.clear();
